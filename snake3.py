@@ -105,7 +105,10 @@ while True:
         pygame.draw.rect(screen, options['GREEN'], (food[0], food[1], 50, 50))
     else:
         pass
- 
+    
+    
+    
+#проверка столкновений
     if food == snake[0]:
         print(food,snake[0])
         snake.append(food)
