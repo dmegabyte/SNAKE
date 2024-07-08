@@ -106,7 +106,7 @@ while True:
     else:
         pass
  
-    if food[0]+50  == snake[0][0] and food[1]+50 == snake[0][1]:
+    if food == snake[0]:
         print(food,snake[0])
         snake.append(food)
         food = create_food()
