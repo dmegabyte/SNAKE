@@ -7,10 +7,20 @@ pygame.init()
 
 move = 'go down'
 
+class Options:
+    fps = 3
+    WIDTH = 800
+    HEIGHT = 700
+    size = 50
+
+class Color:
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+
 options = {
     'FPS': 3,
-    'WIDTH': 1000,
-    'HEIGHT': 1000,
+    'WIDTH': 800,
+    'HEIGHT': 800,
     'GREEN': (0, 255, 0),
     'SCORE': 0,
 }
@@ -21,37 +31,38 @@ keyscancode = {
     'LEFT': 80,
     'RIGHT': 79, 
 }
-screen = pygame.display.set_mode((options['WIDTH'], options['HEIGHT']))
+screen = pygame.display.set_mode((Options.WIDTH, Options.HEIGHT))
 snake = [[0, 0],[0, 0]]
 
 
 def game_over():          
     for x,y in snake:
-        if (x >= 1000 or y >= 1000) or (x < 0 or y < 0) or (len(snake)!= len(frozenset(map(tuple, snake)))):
+        if (x >= Options.WIDTH or y >= Options.HEIGHT ) or (x < 0 or y < 0) or (len(snake)!= len(frozenset(map(tuple, snake)))):
             screen_gameover(options)       
         else:
             return options['FPS']  
 
 def move_function(head,move):
     if move == 'go up':
-        head[1] -= 50
+        head[1] -= Options.size
     elif move == 'go down':
-        head[1] += 50
+        head[1] += Options.size
     elif move == 'go left':
-        head[0] -= 50
+        head[0] -= Options.size
     elif move == 'go right':
-        head[0] += 50
+        head[0] += Options.size
     else:
         pass
     return head
     
 def random_num():
-    random_number = random.randint(0, 19) * 50
-    return random_number
+    random_x = random.randint(0, int(Options.WIDTH/Options.size - 1)) * Options.size
+    random_y = random.randint(0,  int(Options.HEIGHT/Options.size - 1)) * Options.size
+    return [random_x,random_y]
 
 def draw_snake(snake):       
     for x, y in snake:
-        pygame.draw.rect(screen, options['GREEN'], (x, y, 50, 50))
+        pygame.draw.rect(screen, options['GREEN'], (x, y, Options.size, Options.size))
 def snake_move(snake,move):
     head = snake[0].copy()
     snake_copy = snake.copy()  
@@ -89,9 +100,9 @@ def keydown(event,move):
     else:
         return move  
 def create_food():
-    food = [(random_num()),(random_num())]
+    food = random_num()
     while food == snake[0]:
-        food = [random_num(), random_num()]
+        food = random_num()
     return food    
 food = create_food()        
 while True:
@@ -101,10 +112,7 @@ while True:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             move = keydown(event,move)
-    if food:
-        pygame.draw.rect(screen, options['GREEN'], (food[0], food[1], 50, 50))
-    else:
-        pass
+
     
     
     
@@ -123,6 +131,11 @@ while True:
     screen.blit(text, (0, 0))
     snake_move(snake,move)
     options['FPS'] = game_over()
+
+
+
+
+    pygame.draw.rect(screen, Color.red, (food[0]+Options.size*0.2, food[1]+Options.size*0.2, Options.size*0.6, Options.size*0.6))
     draw_snake(snake)
 
     pygame.display.flip()                          
