@@ -8,6 +8,26 @@ pygame.init()
 move_list = ['go down','go right']
 
 move = ' '
+image_apple = pygame.image.load('images/apple50.png')
+image_head = pygame.image.load('images/head_mini.png')
+image_body = pygame.image.load('images/body7.png')
+image_bad_apple = pygame.image.load('images/bad_apple.png')
+
+class MySprite(pygame.sprite.Sprite):
+    def __init__(self,image):
+        super().__init__()
+        self.original_image = image
+        self.image = image
+        self.rect = self.image.get_rect()
+        
+    def rotate(self, angle):
+        rotated_image = pygame.transform.rotate(self.original_image.copy(), angle)
+        self.image = rotated_image
+        self.rect = self.image.get_rect()
+
+apple = MySprite(image_apple)
+snake_head = MySprite(image_head)
+snake_body = MySprite(image_body)
 
 class Options:
     fps = 3
@@ -37,6 +57,27 @@ screen = pygame.display.set_mode((Options.WIDTH, Options.HEIGHT))
 snake = [[0, 0],[0, 0]]
 
 
+def image_rotate():
+    
+    if u != True:
+        if move == 'go up':
+            snake_head.rotate(180)
+
+        elif move == 'go down':
+            snake_head.rotate(0)
+
+        elif move == 'go left':
+            snake_head.rotate(-90)
+
+        elif move == 'go right':
+            snake_head.rotate(90)
+
+        else:
+            pass
+        
+
+
+
 def game_over():          
     for x,y in snake:
         if (x >= Options.WIDTH or y >= Options.HEIGHT ) or (x < 0 or y < 0) :
@@ -64,6 +105,26 @@ def random_num():
     random_x = random.randint(0, int(Options.WIDTH/Options.size - 1)) * Options.size
     random_y = random.randint(0,  int(Options.HEIGHT/Options.size - 1)) * Options.size
     return [random_x,random_y]
+
+
+def draw_objects():
+    apple.rect.x = food[0]
+    apple.rect.y = food[1]
+    image_rotate()
+     
+    
+    for i in snake:
+        if i == snake[0]:
+            snake_head.rect.x = snake[0][0]
+            snake_head.rect.y = snake[0][1]
+        else:
+            snake_body.rect.x = i[0]
+            snake_body.rect.y = i[1]
+            screen.blit(snake_body.image,snake_body.rect)
+    
+    screen.blit(apple.image,apple.rect)
+    screen.blit(snake_head.image,snake_head.rect)
+    
 
 def draw_snake(snake):       
     for x, y in snake:
@@ -132,7 +193,7 @@ while True:
         print(food,snake[0])
         snake.append(food)
         food = create_food()
-        Options.fps+=1
+        Options.fps+=0.1
         Options.score += 1
                              
     font = pygame.font.Font(None, 50)
@@ -142,8 +203,11 @@ while True:
     Options.fps = game_over()
 
     pygame.draw.rect(screen, Color.red, (food[0]+Options.size*0.2, food[1]+Options.size*0.2, Options.size*0.6, Options.size*0.6))
-    draw_snake(snake)
+    
+    
 
+    draw_objects()
+    # draw_snake(snake)
     pygame.display.flip()                          
     
     clock.tick(Options.fps)
